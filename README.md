@@ -14,10 +14,6 @@ An interactive web application to calculate and visualize **European option pric
 - Dynamic recalculation of heatmaps with updated inputs
 - User-friendly interface with sidebar parameters
 
-## 🖼️ Preview
-
-<img src="assets/option-pricer-screenshot.png" width="700">
-
 ## 🚀 Live Demo
 
 > [🔗 Launch App](https://your-deployment-link)  
