@@ -37,6 +37,13 @@ max_spot = st.sidebar.number_input("Maximum Spot Price", value=120.0)
 min_vol = st.sidebar.slider("Minimum Volatility", min_value=0.01, max_value=1.0, value=0.1)
 max_vol = st.sidebar.slider("Maximum Volatility", min_value=0.01, max_value=1.0, value=0.5)
 
+# PnL parameters
+st.sidebar.markdown("---")
+st.sidebar.header("PnL Parameters")
+call_purchase_price = st.sidebar.number_input("Call Purchase Price", min_value=0.0, value=0.0)
+put_purchase_price = st.sidebar.number_input("Put Purchase Price", min_value=0.0, value=0.0)
+
+
 st.title("Option Pricing App")
 
 # Session state to track if calculation has been done at least once
@@ -118,5 +125,37 @@ if st.session_state.calculated:
                 st.pyplot(fig1)
             with col4:
                 st.pyplot(fig2)
-    else:
-        st.info("Enter inputs in the sidebar and click **Calculate Option Price** to begin.")
+            
+                # --- PnL Heatmaps ---
+            st.markdown("<br><hr><br>", unsafe_allow_html=True)
+            st.subheader("Profit and Loss (PnL) Heatmap")
+
+            call_pnl = call_matrix - call_purchase_price
+            put_pnl = put_matrix - put_purchase_price
+
+            fig3, ax3 = plt.subplots(figsize=(8, 6))
+            sns.heatmap(call_pnl, xticklabels=np.round(spot_prices, 2), yticklabels=np.round(volatilities, 2),
+                        cmap="RdYlGn", center=0, ax=ax3, annot=True, fmt=".1f", annot_kws={"size": 8}, 
+                        cbar_kws={'label': 'Call PnL'})
+            ax3.set_xlabel("Spot Price")
+            ax3.set_ylabel("Volatility")
+            ax3.set_title("Call Option PnL Heatmap")
+            plt.xticks(rotation=45)
+
+            fig4, ax4 = plt.subplots(figsize=(8, 6))
+            sns.heatmap(put_pnl, xticklabels=np.round(spot_prices, 2), yticklabels=np.round(volatilities, 2),
+                        cmap="RdYlGn", center=0, ax=ax4, annot=True, fmt=".1f", annot_kws={"size": 8}, 
+                        cbar_kws={'label': 'Put PnL'})
+            ax4.set_xlabel("Spot Price")
+            ax4.set_ylabel("Volatility")
+            ax4.set_title("Put Option PnL Heatmap")
+            plt.xticks(rotation=45)
+
+            col5, col6 = st.columns(2)
+            with col5:
+                st.pyplot(fig3)
+            with col6:
+                st.pyplot(fig4)
+
+if not st.session_state.calculated:
+    st.info("Enter option pricing inputs in the sidebar and click **Calculate Option Price** to get started.")
