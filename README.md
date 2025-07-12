@@ -11,6 +11,7 @@ An interactive web application to calculate and visualize **European option pric
 - Visualize:
   - Call & Put option prices
   - Heatmaps showing option price sensitivity to spot price and volatility
+  - Heatmaps showing PnL based on call and put option purchase prices
 - Dynamic recalculation of heatmaps with updated inputs
 - User-friendly interface with sidebar parameters
 
