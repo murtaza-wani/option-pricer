@@ -16,7 +16,7 @@ An interactive web application to calculate and visualize **European option pric
 
 ## 🚀 Live Demo
 
-> [🔗 Launch App](https://your-deployment-link)  
+> [🔗 Launch App](https://option-pricer-jgmhwbjmbndo2xgiepwm9l.streamlit.app/) 
 (*Replace with actual link after deployment*)
 
 ## 🛠️ Tech Stack
