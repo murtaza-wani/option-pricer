@@ -56,28 +56,286 @@ if calculate:
 
 # Only display results if calculated at least once
 if st.session_state.calculated:
+    
+    epsilon = 0.1
+    spot_prices = []
+    
+    call_deltas = []
+    put_deltas = []
+    call_gammas = []
+    put_gammas = []
+    call_thetas = []
+    put_thetas = []
+    call_vegas = []
+    put_vegas = []
+    call_rhos = []
+    put_rhos = []
+    
+    for y in range(-1000, 1001, 1):
+        S_i = S + y * epsilon
+        if S_i <=epsilon:
+            continue
+        spot_prices.append(S_i)
 
     # --- Main call/put price ---
     if model == "Black-Scholes":
         call_price, put_price = black_scholes(S, K, T, r, sigma)
+        #Delta
+        for s in spot_prices:
+            call_up, put_up = black_scholes(s + epsilon, K, T, r, sigma)
+            call_down, put_down = black_scholes(s - epsilon, K, T, r, sigma)
+            call_delta = (call_up - call_down) / (2 * epsilon)
+            put_delta = (put_up - put_down) / (2 * epsilon)
+            call_deltas.append(call_delta)
+            put_deltas.append(put_delta)
+        #Gamma
+        for s in spot_prices:
+            call_up, put_up = black_scholes(s + epsilon, K, T, r, sigma)
+            call_down, put_down = black_scholes(s - epsilon, K, T, r, sigma)
+            call, put = black_scholes(s, K, T, r, sigma)
+            call_gamma = (call_up - 2 * call + call_down) / (epsilon ** 2)
+            put_gamma = (put_up - 2 * put + put_down) / (epsilon ** 2)
+            call_gammas.append(call_gamma)
+            put_gammas.append(put_gamma)
+        #Theta
+        for s in spot_prices:
+            call_down, put_down = black_scholes(s, K, T - epsilon , r, sigma)
+            call, put = black_scholes(s, K, T, r, sigma)
+            call_theta = (call_down - call) / epsilon
+            put_theta = (put_down -  put) / epsilon
+            call_thetas.append(call_theta)
+            put_thetas.append(put_theta)
+       #Sigma
+        for s in spot_prices:
+            call_up, put_up = black_scholes(s, K, T, r, sigma + 0.01)
+            call_down, put_down = black_scholes(s, K, T, r, sigma - 0.01)
+            call_vega = (call_up - call_down) / (2 * 0.01)
+            put_vega = (put_up - put_down) / (2 * 0.01)
+            call_vegas.append(call_vega)
+            put_vegas.append(put_vega)
+       #Rho
+        for s in spot_prices:
+            call_up, put_up = black_scholes(s, K, T, r + 0.01, sigma)
+            call_down, put_down = black_scholes(s, K, T, r - 0.01, sigma)
+            call_rho = (call_up - call_down) / (2 * 0.01)
+            put_rho = (put_up - put_down) / (2 * 0.01)
+            call_rhos.append(call_rho)
+            put_rhos.append(put_rho)
+            
     elif model == "Monte Carlo":
-        call_price, put_price = monte_carlo(S, K, T, r, sigma, num_simulations)
+        call_price, put_price = monte_carlo(S, K, T, r, sigma, num_simulations)     
+        #Delta
+        for s in spot_prices:
+            call_up, put_up = monte_carlo(s + epsilon, K, T, r, sigma)
+            call_down, put_down = monte_carlo(s - epsilon, K, T, r, sigma)
+            call_delta = (call_up - call_down) / (2 * epsilon)
+            put_delta = (put_up - put_down) / (2 * epsilon)
+            call_deltas.append(call_delta)
+            put_deltas.append(put_delta)
+        #Gamma
+        for s in spot_prices:
+            call_up, put_up = monte_carlo(s + epsilon, K, T, r, sigma)
+            call_down, put_down = monte_carlo(s - epsilon, K, T, r, sigma)
+            call, put = monte_carlo(s, K, T, r, sigma)
+            call_gamma = (call_up - 2 * call + call_down) / (epsilon ** 2)
+            put_gamma = (put_up - 2 * put + put_down) / (epsilon ** 2)
+            call_gammas.append(call_gamma)
+            put_gammas.append(put_gamma)
+        #Theta
+        for s in spot_prices:
+            call_down, put_down = monte_carlo(s, K, T - epsilon , r, sigma)
+            call, put = monte_carlo(s, K, T, r, sigma )
+            call_theta = (call_down - call) / epsilon
+            put_theta = (put_down - put) / epsilon
+            call_thetas.append(call_theta)
+            put_thetas.append(put_theta)
+       #Sigma
+        for s in spot_prices:
+            call_up, put_up = monte_carlo(s, K, T, r, sigma + 0.01)
+            call_down, put_down = monte_carlo(s, K, T, r, sigma - 0.01)
+            call_vega = (call_up - call_down) / (2 * 0.01)
+            put_vega = (put_up - put_down) / (2 * 0,.01)
+            call_vegas.append(call_vega)
+            put_vegas.append(put_vega)
+       #Rho
+        for s in spot_prices:
+            call_up, put_up = monte_carlo(s, K, T, r + 0.01, sigma)
+            call_down, put_down = monte_carlo(s, K, T, r - 0.01, sigma)
+            call_rho = (call_up - call_down) / (2 * 0.01)
+            put_rho = (put_up - put_down) / (2 * 0.01)
+            call_rhos.append(call_rho)
+            put_rhos.append(put_rho)
     elif model == "Binomial":
         call_price, put_price = binomial_model(S, K, T, r, sigma, N)
-    
-    st.markdown(f"### {model}")
+        #Delta
+        for s in spot_prices:
+            call_up, put_up = binomial_model(s + epsilon, K, T, r, sigma)
+            call_down, put_down = binomial_model(s - epsilon, K, T, r, sigma)
+            call_delta = (call_up - call_down) / (2 * epsilon)
+            put_delta = (put_up - put_down) / (2 * epsilon)
+            call_deltas.append(call_delta)
+            put_deltas.append(put_delta)
+        #Gamma
+        for s in spot_prices:
+            call_up, put_up = binomial_model(s + epsilon, K, T, r, sigma)
+            call_down, put_down = binomial_model(s - epsilon, K, T, r, sigma)
+            call, put = binomial_model(s, K, T, r, sigma)
+            call_gamma = (call_up - 2 * call + call_down) / (epsilon ** 2)
+            put_gamma = (put_up - 2 * put + put_down) / (epsilon ** 2)
+            call_gammas.append(call_gamma)
+            put_gammas.append(put_gamma)
+        #Theta
+        for s in spot_prices:
+            call_down, put_down = binomial_model(s, K, T - epsilon , r, sigma)
+            call, put = binomial_model(s, K, T, r, sigma )
+            call_theta = (call_down - call) / epsilon
+            put_theta = (put_down - put) / epsilon
+            call_thetas.append(call_theta)
+            put_thetas.append(put_theta)
+       #Sigma
+        for s in spot_prices:
+            call_up, put_up = binomial_model(s, K, T, r, sigma + 0.01)
+            call_down, put_down = binomial_model(s, K, T, r, sigma - 0.01)
+            call_vega = (call_up - call_down) / (2 * 0.01)
+            put_vega = (put_up - put_down) / (2 * 0.01)
+            call_vegas.append(call_vega)
+            put_vegas.append(put_vega)
+       #Rho
+        for s in spot_prices:
+            call_up, put_up = binomial_model(s, K, T, r + 0.01, sigma)
+            call_down, put_down = binomial_model(s, K, T, r - 0.01, sigma)
+            call_rho = (call_up - call_down) / (2 * 0.01)
+            put_rho = (put_up - put_down) / (2 * 0.01)
+            call_rhos.append(call_rho)
+            put_rhos.append(put_rho)
+            
+    st.markdown(f"### Model : {model}")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("### 📈 Call Option Price")
+        st.markdown("###### Call Option Price 📈 ")
         st.markdown(f"<div style='padding:20px; border-radius:10px; background-color:#e6f4ea; font-size:24px;'>${call_price:.2f}</div>", unsafe_allow_html=True)
+
     with col2:
-        st.markdown("### 📉 Put Option Price")
+        st.markdown("###### Put Option Price 📉 ")
         st.markdown(f"<div style='padding:20px; border-radius:10px; background-color:#fdecea; font-size:24px;'>${put_price:.2f}</div>", unsafe_allow_html=True)
+   
+   # Add vertical spacing
+    st.markdown("<br><hr>", unsafe_allow_html=True)  
+    st.markdown("### Greeks(using finite differences)")
+    col3, col4 = st.columns(2)
+    with col3:
+        st.markdown("###### Delta vs Spot Price (Call)")
+        fig_call, ax_call = plt.subplots(figsize=(5, 3))
+        ax_call.plot(spot_prices, call_deltas, label="Call Delta", color="blue")
+        ax_call.axhline(0, color="gray", linestyle="--")
+        ax_call.set_xlabel("Spot Price")
+        ax_call.set_ylabel("Delta")
+        ax_call.grid(True)
+        st.pyplot(fig_call)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Gamma vs Spot Price (Call)")
+        fig_call, ax_call = plt.subplots(figsize=(5, 3))
+        ax_call.plot(spot_prices, call_gammas, label="Call Gamma", color="blue")
+        ax_call.axhline(0, color="gray", linestyle="--")
+        ax_call.set_xlabel("Spot Price")
+        ax_call.set_ylabel("Gamma")
+        ax_call.grid(True)
+        st.pyplot(fig_call)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Theta vs Time (Call)")
+        fig_call, ax_call = plt.subplots(figsize=(5, 3))
+        ax_call.plot(spot_prices, call_thetas, label="Call Theta", color="blue")
+        ax_call.axhline(0, color="gray", linestyle="--")
+        ax_call.set_xlabel("Time")
+        ax_call.set_ylabel("Theta")
+        ax_call.grid(True)
+        st.pyplot(fig_call)
 
-    # Add vertical spacing
-    st.markdown("<br><hr><br>", unsafe_allow_html=True)
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Vega vs Spot price (Call)")
+        fig_call, ax_call = plt.subplots(figsize=(5, 3))
+        ax_call.plot(spot_prices, call_vegas, label="Call Vega", color="blue")
+        ax_call.axhline(0, color="gray", linestyle="--")
+        ax_call.set_xlabel("Spot Price")
+        ax_call.set_ylabel("Vega")
+        ax_call.grid(True)
+        st.pyplot(fig_call)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Rho vs Spot price (Call)")
+        fig_call, ax_call = plt.subplots(figsize=(5, 3))
+        ax_call.plot(spot_prices, call_rhos, label="Call Rho", color="blue")
+        ax_call.axhline(0, color="gray", linestyle="--")
+        ax_call.set_xlabel("Spot Price")
+        ax_call.set_ylabel("Rho")
+        ax_call.grid(True)
+        st.pyplot(fig_call)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+    with col4: 
+        st.markdown("###### Delta vs Spot Price (Put)")
+        fig_put, ax_put = plt.subplots(figsize=(5, 3))
+        ax_put.plot(spot_prices, put_deltas, label="Put Delta", color="red")
+        ax_put.axhline(0, color="gray", linestyle="--")
+        ax_put.set_xlabel("Spot Price")
+        ax_put.set_ylabel("Delta")
+        ax_put.grid(True)
+        st.pyplot(fig_put)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Gamma vs Spot Price (Put)")
+        fig_put, ax_put = plt.subplots(figsize=(5, 3))
+        ax_put.plot(spot_prices, put_gammas, label="Put Gamma", color="red")
+        ax_put.axhline(0, color="gray", linestyle="--")
+        ax_put.set_xlabel("Spot Price")
+        ax_put.set_ylabel("Gamma")
+        ax_put.grid(True)
+        st.pyplot(fig_put)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Theta vs Time (Put)")
+        fig_put, ax_put = plt.subplots(figsize=(5, 3))
+        ax_put.plot(spot_prices, put_thetas, label="Put Theta", color="red")
+        ax_put.axhline(0, color="gray", linestyle="--")
+        ax_put.set_xlabel("Time")
+        ax_put.set_ylabel("Theta")
+        ax_put.grid(True)
+        st.pyplot(fig_put)
 
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Vega vs Spot Price (Put)")
+        fig_put, ax_put = plt.subplots(figsize=(5, 3))
+        ax_put.plot(spot_prices, put_vegas, label="Put Vega", color="red")
+        ax_put.axhline(0, color="gray", linestyle="--")
+        ax_put.set_xlabel("Spot Price")
+        ax_put.set_ylabel("Vega")
+        ax_put.grid(True)
+        st.pyplot(fig_put)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+        st.markdown("###### Rho vs Spot Price (Put)")
+        fig_put, ax_put = plt.subplots(figsize=(5, 3))
+        ax_put.plot(spot_prices, put_rhos, label="Put Rho", color="red")
+        ax_put.axhline(0, color="gray", linestyle="--")
+        ax_put.set_xlabel("Spot Price")
+        ax_put.set_ylabel("Rho")
+        ax_put.grid(True)
+        st.pyplot(fig_put)
+        
+        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        
+    st.markdown("<br><hr><br>", unsafe_allow_html=True)  
     # --- Heatmap ---
     if min_spot >= max_spot:
         st.error("Minimum Spot Price should be less than Maximum Spot Price.")
