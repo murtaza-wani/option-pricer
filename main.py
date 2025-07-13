@@ -278,7 +278,7 @@ if st.session_state.calculated:
         ax_call.grid(True)
         st.pyplot(fig_call)
         
-        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        st.markdown("<br>", unsafe_allow_html=True) 
     with col4: 
         st.markdown("###### Delta vs Spot Price (Put)")
         fig_put, ax_put = plt.subplots(figsize=(5, 3))
@@ -333,7 +333,7 @@ if st.session_state.calculated:
         ax_put.grid(True)
         st.pyplot(fig_put)
         
-        st.markdown("<br><hr>", unsafe_allow_html=True) 
+        st.markdown("<br>", unsafe_allow_html=True) 
         
     st.markdown("<br><hr><br>", unsafe_allow_html=True)  
     # --- Heatmap ---
